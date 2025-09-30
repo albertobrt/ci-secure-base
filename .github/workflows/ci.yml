@@ -58,29 +58,9 @@ jobs:
 
       # Upload des rapports en artefacts
       - name: Upload scan reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: security-reports
           path: |
             trivy-report.txt
             gitleaks-report.json
-
-  push-docker:
-    runs-on: ubuntu-latest
-    needs: security-scan
-    if: success()
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_TOKEN }}
-
-      - name: Push Docker image
-        run: |
-          IMAGE_NAME=${{ secrets.DOCKER_HUB_USERNAME }}/devsecure-api:latest
-          docker tag devsecure-api:latest $IMAGE_NAME
-          docker push $IMAGE_NAME
